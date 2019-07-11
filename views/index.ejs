@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Test</title>
+</head>
+<body>
+
+  <button onclick="handler.open()">Open Plaid Link</button>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+  <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script>
+    function openPlaidLink() {
+      console.log({
+        PLAID_ENV: '<%= PLAID_ENV %>',
+        PLAID_PUBLIC_KEY: '<%= PLAID_PUBLIC_KEY %>',
+        PLAID_PRODUCTS: '<%= PLAID_PRODUCTS %>'
+      });
+    }
+
+    var products = '<%= PLAID_PRODUCTS %>'.split(',');
+    var handler = Plaid.create({
+      apiVersion: 'v2',
+      clientName: 'Plaid Quickstart',
+      env: '<%= PLAID_ENV %>',
+      product: products,
+      key: '<%= PLAID_PUBLIC_KEY %>',
+      onSuccess: async function(public_token) {
+        console.log({ public_token });
+        console.log("Exchanging public token for access token.");
+        var data = await exchangePublicTokenForAccessToken(public_token);
+        console.log({ access_token: data.access_token, item_id: data.item_id });
+      }
+    });
+
+
+    async function exchangePublicTokenForAccessToken(public_token) {
+      try {
+        let response = await axios.post("/api/get_access_token", { public_token });
+        return response.data;
+      } catch (error) {
+        console.log("Error exchanging public token. Returning null.");
+        console.log(error);
+        return null;
+      }
+    }
+  </script>
+  
+</body>
+</html>
