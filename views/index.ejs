@@ -11,6 +11,12 @@
   <button onclick="handler.open()">Link Account(s)</button>
   <p><sup>*</sup> Only credit and checking accounts supported</p>
 
+  <div>
+    <label for="">Get transactions for account id</label>
+    <input type="text" id="account_ids">
+    <button onclick="getTransactions()">Get</button>
+  </div>
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
   <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
