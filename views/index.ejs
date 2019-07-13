@@ -65,6 +65,40 @@
         return null;
       }
     }
+
+    async function getAccounts() {
+      try {
+        let response = await axios.get("/api/accounts");
+        return response.data;
+      } catch (error) {
+        console.log("Error while getting accounts data.");
+        console.log({ error });
+        return null;
+      }
+    }
+
+    async function getItem() {
+      try {
+        let response = await axios.get("/api/item")
+        return response.data;
+      } catch (error) {
+        console.log("Error while getting item data.");
+        console.log({ error });
+        return null;
+      }
+    }
+
+    async function getTransactions() {
+      let account_ids = document.getElementById("account_ids").value.split(",").map(x => x.trim());
+      try {
+        let response = await axios.post("/api/transactions", { account_ids });
+        return response.data;
+      } catch (error) {
+        console.log(`Error while getting transactions for account ${account_ids}.`);
+        console.log({ error });
+        return null;
+      }
+    }
   </script>
   
 </body>
