@@ -13,15 +13,20 @@ var client = new plaid.Client(
 var plaidController = {};
 plaidController.ACCESS_TOKEN = null;
 plaidController.ITEM_ID = null;
+plaidController.INSTITUTION_ID = null;
+Object.defineProperty(plaidController, "TRANSACTION_RANGE_IN_DAYS", {
+  value: 7,
+  writable: false,
+  enumerable: true,
+  configurable: true
+});
 
 plaidController.initializePlaidLink = function(request, response) {
-
   response.status(200).json({
     PLAID_PUBLIC_KEY: config.plaid.publicKey,
     PLAID_ENV: config.plaid.envs.sandbox,
     PLAID_PRODUCTS: config.plaid.products.transactions,
   });
-
 }
 
 plaidController.getAccessToken = function(request, response) {
