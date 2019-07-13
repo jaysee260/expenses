@@ -23,6 +23,6 @@ app.get("/api/initialize_plaid_link", controllers.plaid.initializePlaidLink);
 app.post("/api/get_access_token", controllers.plaid.getAccessToken);
 app.get("/api/item", controllers.plaid.getItemInformation);
 app.get("/api/accounts", controllers.plaid.getItemAccounts);
-app.get("/api/transactions", controllers.plaid.getAccountTransactions);
+app.post("/api/transactions", controllers.plaid.getAccountTransactions);
 
 module.exports = app;
