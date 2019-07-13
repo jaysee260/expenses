@@ -1,4 +1,5 @@
 var plaid = require("plaid");
+var moment = require("moment");
 var config = require("../config");
 
 var client = new plaid.Client(
