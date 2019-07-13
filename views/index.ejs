@@ -41,18 +41,26 @@
       onSuccess: async function(public_token) {
         console.log({ public_token });
         console.log("Exchanging public token for access token.");
-        var data = await exchangePublicTokenForAccessToken(public_token);
+        var data = await exchangePublicToken(public_token);
         console.log({ access_token: data.access_token, item_id: data.item_id });
+
+        console.log("Requesting item data.");
+        var itemData = await getItem();
+        console.log({ itemData });
+
+        console.log("Requesting accounts data.");
+        var accountsData = await getAccounts();
+        console.log({ accountsData });
       }
     });
 
 
-    async function exchangePublicTokenForAccessToken(public_token) {
+    async function exchangePublicToken(public_token) {
       try {
         let response = await axios.post("/api/get_access_token", { public_token });
         return response.data;
       } catch (error) {
-        console.log("Error exchanging public token. Returning null.");
+        console.log("Error while exchanging public token. Returning null.");
         console.log(error);
         return null;
       }
