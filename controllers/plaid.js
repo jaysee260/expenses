@@ -72,7 +72,7 @@ plaidController.getItemInformation = function(request, response) {
       status: 400,
       message: "Couldn't proceed with request; missing access token."
     });
-}
+  }
 
   console.log("Attempting to retrieve item information.");
   client.getItem(this.ACCESS_TOKEN)
