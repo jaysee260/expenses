@@ -55,17 +55,142 @@ plaidController.getAccessToken = function(request, response) {
 
 // An Item represents a set of credentials at a financial institution
 plaidController.getItemInformation = function(request, response) {
-  response.status(200).send("<h2>endpoint under construction</h2>");
+
+  if ( !exists(this.ACCESS_TOKEN) ) {
+    console.log("Couldn't find access token.");
+    response.status(400).json({
+      status: 400,
+      message: "Couldn't proceed with request; missing access token."
+    });
+}
+
+  console.log("Attempting to retrieve item information.");
+  client.getItem(this.ACCESS_TOKEN)
+    .then(itemResponse => {
+      let { item_id, institution_id } = itemResponse.item;
+      console.log(`Successfully retrieved item with id: ${item_id}.`);
+      console.log(`Will now attempt to retrieve institution information for institution with id: ${institution_id}`);
+
+      client.getInstitutionById(institution_id)
+        .then(instResponse => {
+          console.log("Successfully retrieved institution information."); // this would be debug logging.
+          
+          response.status(200).json({
+            status: 200,
+            data: {
+              item: { item_id: itemResponse.item.item_id, },
+              institution: {
+                name: instResponse.institution.name,
+                institution_id: instResponse.institution.institution_id
+              }
+            }
+          });
+        })
+        .catch(error => {
+          console.log("Error while fetching institution data.");
+          console.log({ error });
+          response.status(500).json({
+            status: 500,
+            message: "Couldn't retrieve institution information."
+          });
+        });
+
+    })
+    .catch(error => {
+      console.log("Error while fetching item data.");
+      console.log({ error });
+      response.status(500).json({
+        status: 500,
+        message: "Couldn't retrieve item information."
+      });
+    });
 }
 
 // Accounts are associated with Items
 plaidController.getItemAccounts = function(request, response) {
-  response.status(200).send("<h2>endpoint under construction</h2>");
+
+  if ( !exists(this.ACCESS_TOKEN) ) {
+    console.log("Unable to find access token.");
+    response.status(400).json({
+      status: 400,
+      message: "Couldn't proceed with request; missing access token."
+    });
+  }
+
+  client.getAccounts(this.ACCESS_TOKEN)
+    .then(accountsResponse => {
+      let { accounts, item } = accountsResponse;
+      console.log(`Retrieved ${accounts.length} accounts from institution (ID: ${item.institution_id}) with item ID ${item.item_id}.`);
+
+      console.log("Filtering accounts: preserving accounts of 'credit card' and 'checking' subtype only.");
+      let filteredAccounts = accounts.filter(acct => acct.subtype === "credit card" || acct.subtype === "checking");
+
+      console.log("Finished filtering accounts.");
+      console.log(`Filtered accounts count is: ${filteredAccounts.length}`);
+
+      response.status(200).json({
+        status: 200,
+        data: {
+          accounts: filteredAccounts,
+          item: { item_id: item.item_id, institution_id: item.institution_id }
+        }
+      });
+    })
+    .catch(error => {
+      console.log("Error while getting accounts data.");
+      console.log({ error });
+      response.status(500).json({ status: 500, error });
+    });
 }
 
 plaidController.getAccountTransactions = function(request, response) {
-  response.status(200).send("<h2>endpoint under construction</h2>");
+
+  if ( !exists(this.ACCESS_TOKEN) ) {
+    console.log("Unable to find access token.");
+    response.status(400).json({
+      status: 400,
+      message: "Couldn't proceed with request; missing access token."
+    });
+  }
+
+  let { account_ids } = request.body;
+  if ( !exists(account_ids) ) {
+    console.log("No account_id provided in request body; no transactions to fetch.");
+    response.status(400).json({
+      status: 400,
+      message: "No account_id provided in request body. To get transactions for an account, you must provide an account_id."
+    });
+  }
+
+  console.log(`Received request to get transactions for account(s) with id(s) ${account_ids}`);
+
+  var startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
+  var endDate = moment().format('YYYY-MM-DD');
+  console.log(`Will attempt to retrieve transactions from ${startDate} to ${endDate}`);
+  
+  client.getTransactions(this.ACCESS_TOKEN, startDate, endDate, { count: 10, offset: 0, account_ids })
+    .then(transactionsResponse => {
+
+      console.log(`Retrieved a total of ${transactionsResponse.total_transactions} transaction(s) from given date range for ${transactionsResponse.accounts.length} account(s).`);
+      response.status(200).json({
+        status: 200,
+        data: transactionsResponse
+      });
+
+    })
+    .catch(error => {
+      console.log("Error while getting transactions.");
+      console.log({ error });
+      response.status(500).json({
+        status: 500,
+        message: "Couldn't get transactions."
+      });
+
+    });
 }
 
+function exists(value) {
+  return !(value == undefined || value == null || value == "");
+}
 
 module.exports = plaidController;
