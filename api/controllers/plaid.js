@@ -1,12 +1,13 @@
 var plaid = require("plaid");
 var moment = require("moment");
-var config = require("../config");
+var config = require("../config").plaid;
+// var cache = require("../utils/cache");
 
 var client = new plaid.Client(
-  config.plaid.clientId,
-  config.plaid.secret,
-  config.plaid.publicKey,
-  plaid.environments[config.plaid.envs.sandbox],
+  config.clientId,
+  config.secret,
+  config.publicKey,
+  plaid.environments[config.envs.sandbox],
   {version: '2018-05-22'}
 );
 
@@ -23,9 +24,9 @@ Object.defineProperty(plaidController, "TRANSACTION_RANGE_IN_DAYS", {
 
 plaidController.initializePlaidLink = function(request, response) {
   response.status(200).json({
-    PLAID_PUBLIC_KEY: config.plaid.publicKey,
-    PLAID_ENV: config.plaid.envs.sandbox,
-    PLAID_PRODUCTS: config.plaid.products.transactions,
+    PLAID_PUBLIC_KEY: config.publicKey,
+    PLAID_ENV: config.envs.sandbox,
+    PLAID_PRODUCTS: config.products.transactions,
   });
 }
 

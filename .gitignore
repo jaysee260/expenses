@@ -1,4 +1,8 @@
-node_modules
-config
-notes
 .git
+sandbox
+
+# api
+api/node_modules
+api/config
+api/notes
+api/workflow.txt
