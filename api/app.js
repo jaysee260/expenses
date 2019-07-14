@@ -1,5 +1,6 @@
 var express = require("express");
 var bodyParser = require("body-parser");
+var responseTime = require("response-time");
 var cors = require("cors");
 var path = require("path");
 
@@ -8,6 +9,7 @@ var app = express();
 // Set up application middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(responseTime());
 app.use(cors({ origin: "*" }));
 
 app.use(express.static( path.join(__dirname, "views") ));

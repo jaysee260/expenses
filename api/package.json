@@ -16,6 +16,7 @@
     "moment": "^2.24.0",
     "nodemon": "^1.19.1",
     "plaid": "^3.1.2",
-    "redis": "^2.8.0"
+    "redis": "^2.8.0",
+    "response-time": "^2.3.2"
   }
 }
