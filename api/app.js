@@ -21,6 +21,9 @@ var controllers = require("./controllers");
 
 app.get("/", controllers.home.index);
 app.get("/health", controllers.home.health);
+app.get("/login", controllers.home.loginPage);
+app.get("/login/authenticate", controllers.auth.authenticateLogin);
+app.get("/dashboard", controllers.dashboard.home);
 app.get("/api/initialize_plaid_link", controllers.plaid.initializePlaidLink);
 app.post("/api/get_access_token", controllers.plaid.getAccessToken);
 app.get("/api/item", controllers.plaid.getItemInformation);

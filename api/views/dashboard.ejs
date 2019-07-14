@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Dasboard</title>
+</head>
+<body>
+
+  <button onclick="handler.open()">Link Account(s)</button>
+  <p><sup>*</sup> Only credit and checking accounts supported</p>
+
+  <div>
+    <label for="">Get transactions for account id</label>
+    <input type="text" id="account_ids">
+    <button onclick="getTransactions()">Get</button>
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+  <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script>
+    function openPlaidLink() {
+      console.log({
+        PLAID_ENV: '<%= PLAID_ENV %>',
+        PLAID_PUBLIC_KEY: '<%= PLAID_PUBLIC_KEY %>',
+        PLAID_PRODUCTS: '<%= PLAID_PRODUCTS %>'
+      });
+    }
+
+    var products = '<%= PLAID_PRODUCTS %>'.split(',');
+    var handler = Plaid.create({
+      apiVersion: 'v2',
+      clientName: 'Plaid Quickstart',
+      env: '<%= PLAID_ENV %>',
+      product: products,
+      key: '<%= PLAID_PUBLIC_KEY %>',
+      onSuccess: async function(public_token) {
+        console.log({ public_token });
+        console.log("Exchanging public token for access token.");
+        var data = await exchangePublicToken(public_token);
+        console.log({ access_token: data.access_token, item_id: data.item_id });
+
+        console.log("Requesting item data.");
+        var itemData = await getItem();
+        console.log({ itemData });
+
+        console.log("Requesting accounts data.");
+        var accountsData = await getAccounts();
+        console.log({ accountsData });
+      }
+    });
+
+
+    async function exchangePublicToken(public_token) {
+      try {
+        let response = await axios.post("/api/get_access_token", { public_token });
+        return response.data;
+      } catch (error) {
+        console.log("Error while exchanging public token. Returning null.");
+        console.log(error);
+        return null;
+      }
+    }
+
+    async function getAccounts() {
+      try {
+        let response = await axios.get("/api/accounts");
+        return response.data;
+      } catch (error) {
+        console.log("Error while getting accounts data.");
+        console.log({ error });
+        return null;
+      }
+    }
+
+    async function getItem() {
+      try {
+        let response = await axios.get("/api/item")
+        return response.data;
+      } catch (error) {
+        console.log("Error while getting item data.");
+        console.log({ error });
+        return null;
+      }
+    }
+
+    async function getTransactions() {
+      let account_ids = document.getElementById("account_ids").value.split(",").map(x => x.trim());
+      try {
+        let response = await axios.post("/api/transactions", { account_ids });
+        return response.data;
+      } catch (error) {
+        console.log(`Error while getting transactions for account ${account_ids}.`);
+        console.log({ error });
+        return null;
+      }
+    }
+  </script>
+  
+</body>
+</html>
