@@ -1,3 +1,4 @@
+var plaid = require("plaid");
 var config = require("../config").plaid;
 
 var client = new plaid.Client(
