@@ -55,4 +55,4 @@ function plaidService() {
     }
 }
 
-module.exports = plaidService;
+module.exports = new plaidService();
