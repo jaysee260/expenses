@@ -1,6 +1,7 @@
 var plaidClient = require("../utils/plaid/client");
 
 function AccountService(ACCESS_TOKEN) {
+  /** Gets accounts associated with item associated with access token */
   this.getCreditAndCheckingAccounts = () =>
     new Promise((resolve, reject) => {
       plaidClient.getAccounts(ACCESS_TOKEN)
