@@ -8,14 +8,18 @@
 </head>
 <body>
 
-  <button onclick="handler.open()">Link Account(s)</button>
-  <p><sup>*</sup> Only credit and checking accounts supported</p>
+  <button
+    onclick="handler.open()"
+    title="Only credit and checking accounts supported"
+  >
+    Add Account*
+  </button>
 
-  <div>
+  <!-- <div>
     <label for="">Get transactions for account id</label>
     <input type="text" id="account_ids">
     <button onclick="getTransactions()">Get</button>
-  </div>
+  </div> -->
 
   <ul id="accounts"></ul>
 
