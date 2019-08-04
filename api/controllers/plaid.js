@@ -185,7 +185,7 @@ plaidController.getAccountTransactions = function(request, response) {
       console.log(`Retrieved a total of ${transactionsResponse.total_transactions} transaction(s) from given date range for ${transactionsResponse.accounts.length} account(s).`);
       response.status(200).json({
         status: 200,
-        data: transactionsResponse
+        data: transactionsResponse.transactions
       });
 
     })
