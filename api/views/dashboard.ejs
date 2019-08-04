@@ -17,6 +17,7 @@
     <button onclick="getTransactions()">Get</button>
   </div>
 
+  <ul id="accounts"></ul>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
   <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
@@ -44,16 +45,40 @@
         var data = await exchangePublicToken(public_token);
         console.log({ access_token: data.access_token, item_id: data.item_id });
 
-        console.log("Requesting item data.");
-        var itemData = await getItem();
-        console.log({ itemData });
+        // console.log("Requesting item data.");
+        // var itemData = await getItem();
+        // console.log({ itemData });
 
-        console.log("Requesting accounts data.");
-        var accountsData = await getAccounts();
-        console.log({ accountsData });
+        // console.log("Requesting accounts data.");
+        // var accountsData = await getAccounts();
+        // console.log({ accountsData });
+        displayAccountsInItem();
+
       }
     });
 
+    async function displayAccountsInItem() {
+      var accountsList = document.getElementById("accounts");
+      var response;
+
+      try {
+        // fetch accounts
+        response = await getAccounts();
+        console.log({ response });
+        // render a list item for each account
+        response.data.accounts.forEach(acct => {
+          let li = document.createElement("li");
+          let a = document.createElement("a");
+          a.setAttribute("href", `/account/${acct.account_id}`)
+          a.innerHTML = acct.name + " - " + acct.subtype;
+          li.appendChild(a);
+          accountsList.appendChild(li);
+        });
+      } catch (error) {
+        console.log({ error });
+      }
+
+    }
 
     async function exchangePublicToken(public_token) {
       try {
